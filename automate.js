@@ -1,7 +1,6 @@
 const path = require("path")
 const {writeFileSync, readFileSync} = require("fs")
-
-
+require("dotenv").config()
 
 let letters = "abcdefghijklmnopqrstuvwxyz"
 
@@ -13,7 +12,7 @@ let {getPageWithSesh, getQueriedPage,  getValidatedSesh} = require("./gisx");
 
 (async () =>  {
 
-	let phpsesh = await getValidatedSesh("u504207", "p186119")
+	let phpsesh = await getValidatedSesh(process.env.u, process.env.p)
 	for(let i = 0; i < letters.length; i++){
 
 		for(let j = 0; j < letters.length; j++){
