@@ -65,7 +65,7 @@ app.post("/search", async (req, res) => {
 
 
 
-	let fullinfo = names.map((s, i) => [s + " " +surnames[i], ulinks[i]])
+	let fullinfo = surnames.map((s, i) => [s + " " +names[i], ulinks[i]])
 	
 
 	let copy = fullinfo.slice();
@@ -103,7 +103,7 @@ app.use("/uinfo", uinfoRouter)
 
 
 httpServer.listen(PORT, async () => {
-
+	console.log(process.env.u, process.env.p)
 	phpsesh = await getValidatedSesh(process.env.u, process.env.p)
-
+	console.log(phpsesh)
 })
