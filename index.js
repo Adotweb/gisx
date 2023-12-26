@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require("express");
 const app = express();
 
@@ -16,6 +17,12 @@ app.use(bodyparser.urlencoded())
 
 app.use(express.static(path.join(__dirname, "static")))
 
+const {getValidatedSesh, getPageWithSesh} = require("./gisx")
+
+
+let phpsesh = ""
+
+
 app.post("/click", async (req, res) => {
 
 	
@@ -23,15 +30,80 @@ app.post("/click", async (req, res) => {
 
 })
 
+
+function getSim(data, keyword){
+
+	data = data.toLowerCase();
+
+	keyword = keyword.toLowerCase(); 
+
+	return data.length - data.replace(new RegExp(keyword, "g"), "").length
+
+}
+
 app.post("/search", async (req, res) => {
 
-	const {query} = req.body
+	let {query} = req.body
+
+	query = query.toLowerCase().trim().replaceAll(/\s+/g, " ");
+		
 
 	
-	let names = fs.readFilySync()
+
+	let people = fs.readFileSync(path.join(__dirname, "gisxdb.txt"), "utf8")
+	
+	let names = ([...people.matchAll(/"name":"[^"]*"/g)].map(s => s[0]))	
+
+	let surnames = ([...people.matchAll(/"vorname":"[^"]*"/g)].map(s => s[0]))	
+
+	let ulinks = ([...people.matchAll(/"u_link":"[^"]*"/g)].map(s => s[0]))
+
+	names = names.map(name => name.split(":")[1].replaceAll('"', ""))
+	surnames = surnames.map(name => name.split(":")[1].replaceAll('"', ""))
+	ulinks = ulinks.map(name => name.split(":")[1].replaceAll('"', ""))
 
 
-	res.send(query)
+
+
+	let fullinfo = names.map((s, i) => [s + " " +surnames[i], ulinks[i]])
+	
+
+	let copy = fullinfo.slice();
+
+	copy.sort((a, b) => {
+		return getSim(b[0], query) - getSim(a[0], query)
+	})
+
+	copy = copy.slice(0, 8)
+
+	copy = copy.map(info => `<a href="/uinfo${info[1]}">${info[0]}</a>`).join("</br>")
+
+
+	res.send(copy)
 })
 
-httpServer.listen(PORT)
+
+
+const uinfoRouter = express.Router() 
+
+
+uinfoRouter.get("/*", async (req, res) => {
+
+	console.log(req.originalUrl)
+	
+
+	let userpage = await getPageWithSesh("https://gisy.ksso.ch" + req.originalUrl.replace("/uinfo", ""), phpsesh)
+
+
+	res.send(userpage)
+
+})
+
+app.use("/uinfo", uinfoRouter)
+
+
+httpServer.listen(PORT, async () => {
+
+	phpsesh = await getValidatedSesh(process.env.u, process.env.p)
+
+})
