@@ -1,34 +1,21 @@
+const app = require("localhostjs")
 require("dotenv").config()
-const express = require("express");
-const app = express();
-
-const httpServer = require("http").createServer(app)
-
-const path = require("path")
-const axios = require("axios")
-
-const PORT = process.env.PORT || 5000
-
+const bodyParser = require("body-parser")
 const fs = require("fs")
+const path = require("path")
 
-const bodyparser = require("body-parser")
+const envjson = require("./env.json")
+const cookieParser = require("cookie-parser")
 
-app.use(bodyparser.urlencoded())
+const {getPageWithSesh, getValidatedSesh} = require("./gisx")
 
-app.use(express.static(path.join(__dirname, "static")))
+express = app.express;
 
-const {getValidatedSesh, getPageWithSesh} = require("./gisx")
+app.rest.use(express.json())
+app.rest.use(cookieParser())
 
+app.rest.use(express.static(path.join(__dirname, "static")))
 
-let phpsesh = ""
-
-
-app.post("/click", async (req, res) => {
-
-	
-	res.send("new Div")
-
-})
 
 
 function getSim(data, keyword){
@@ -41,13 +28,22 @@ function getSim(data, keyword){
 
 }
 
-app.post("/search", async (req, res) => {
+app.rest.get("/session", (req, res) => {
 
-	let {query} = req.body
+	console.log(req.cookies)
+
+	if(!req.cookies.session) return res.redirect("/account/login.html")
+
+	return res.send("logged in!")
+})
+
+
+app.rest.post("/search", async (req, res) => {
+
+let {query} = req.body
 
 	query = query.toLowerCase().trim().replaceAll(/\s+/g, " ");
 		
-
 	
 
 	let people = fs.readFileSync(path.join(__dirname, "gisxdb.txt"), "utf8")
@@ -76,14 +72,13 @@ app.post("/search", async (req, res) => {
 
 	copy = copy.slice(0, 8)
 
-	copy = copy.map(info => `<a href="/uinfo${info[1]}">${info[0]}</a>`).join("</br>")
+	copy = copy.map(info => `<a href="./uinfo${info[1]}">${info[0]}</a>`).join("</br>")
 
 
 	res.send(copy)
+
+
 })
-
-
-
 const uinfoRouter = express.Router() 
 
 
@@ -99,11 +94,12 @@ uinfoRouter.get("/*", async (req, res) => {
 
 })
 
-app.use("/uinfo", uinfoRouter)
+app.rest.use("/uinfo", uinfoRouter)
 
 
-httpServer.listen(PORT, async () => {
-	console.log(process.env.u, process.env.p)
-	phpsesh = await getValidatedSesh(process.env.u, process.env.p)
-	console.log(phpsesh)
-})
+app.listen({
+
+	id:envjson.id,
+	secret:envjson.secret
+
+}, "http://localhost:5000")
