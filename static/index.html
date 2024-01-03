@@ -6,58 +6,46 @@
 	<script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
 	<script src="https://cdn.tailwindcss.com"></script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 
 	<link rel="icon" href="./img/logo_tr.png">
 </head>
 
 
-<body class="m-0 bg-black text-white font-bold">
-
-
-	<div class="w-full h-full flex flex-col md:grid md:grid-cols-4 text-lg p-2">
-
-		
-
-
-		<div class="left flex flex-col items-center">
-
-			<h1 class="text-2xl my-10">Startsite</h1>
-
-
-			<div class="w-full"j
-				<a href="">Medie, Links u Dokumänt...</a>
-			</div>
-
-		</div>
-
-
-		<div class="center col-span-2 flex flex-col items-center">
-			
-			<h1 class="text-2xl my-10">Was gits neus?</h1>
-
-
-			<div class="messages w-full h-full border-2 rounded-lg m-4">
-
-				
-
-			</div>
-		</div>
-
-		<div class="right flex flex-col items-center">
-			
-				
-			<input hx-post="/id/search" hx-trigger="keyup" hx-target="#results" hx-swap="innerHTML"  value="" id="query" name="query" type="text" class="bg-gray-700 rounded-full w-[90%] mt-10 p-2 px-4 outline-none" placeholder="Suchen">
-				
-					
-
-
-			<div id="results" class="w-[90%] px-4 results bg-gray-700 rounded-md mt-4">
-			</div>
-			
-		</div>
-
-	</div>	
+<body class="bg-orange-50">
 	
+	<div class="w-full flex flex-col items-center">
+
+
+		<div class="w-[90%] flex flex-col items-center">
+
+			
+		<h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-orange-400 pt-10 ">	
+			GISX
+		</h1>
+
+		<form class="relative " hx-swap="innerHTML" hx-target=".results" hx-trigger="keyup" hx-post="/id/search" >
+
+		<i class="fa fa-search icon absolute top-[50%] left-[2em]"></i>
+		<input type="text" name="query" class="max-w-[300px] md:max-w-[400px] bg-gray-200 p-4 pl-14 outline-none text-2xl font-bold rounded-full mt-4">		
+
+
+
+		</form>	
+	
+
+		<div class="results font-bold bg-gray-100 rounded-md p-4 drop-shadow-lg w-full max-w-[800px]">
+
+
+		</div>
+
+
+
+
+
+		</div>
+
+	</div>		
 
 </body>

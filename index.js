@@ -30,7 +30,6 @@ function getSim(data, keyword){
 
 app.rest.get("/session", (req, res) => {
 
-	console.log(req.cookies)
 
 	if(!req.cookies.session) return res.redirect("/account/login.html")
 
@@ -41,7 +40,6 @@ app.rest.get("/session", (req, res) => {
 app.rest.post("/search", async (req, res) => {
 
 let {query} = req.body
-
 
 	query = query.toLowerCase().trim().replaceAll(/\s+/g, " ");
 		
@@ -85,7 +83,6 @@ const uinfoRouter = express.Router()
 
 uinfoRouter.get("/*", async (req, res) => {
 
-	console.log(req.originalUrl)
 	
 
 	let userpage = await getPageWithSesh("https://gisy.ksso.ch" + req.originalUrl.replace("/uinfo", ""), phpsesh)
