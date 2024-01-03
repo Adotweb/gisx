@@ -2,7 +2,7 @@ const path = require("path")
 const {writeFileSync, readFileSync} = require("fs")
 require("dotenv").config()
 
-let letters = "abcdefghijklmnopqrstuvwxyz"
+let letters = "abcdefghijklmnopqrstuvwxyzäöü"
 
 
 
@@ -23,19 +23,25 @@ let {getPageWithSesh, getQueriedPage,  getValidatedSesh} = require("./gisx");
 
 
 			let queriedPage = await getQueriedPage(query, phpsesh)
+	
 
-	
-	
+		
+			
+
 			let result = queriedPage.split("@ksso.ch</a>").map(s => s + "@ksso.ch</a>").filter(s => s.includes("tr"))	
+
+			
+			
 
 			let users = ""
 	
+
 			for(let i = 0; i < result.length; i++){
 
 				let p = result[i].replace(/(\n)/g, "");
 
 
-
+				
 
 	
 				p = (p.split("tr").reverse().map(s => s + "tr").slice(0, 3).reverse().join(""))
@@ -48,7 +54,6 @@ let {getPageWithSesh, getQueriedPage,  getValidatedSesh} = require("./gisx");
 				p = p.split(/<([^<])*>/g).filter(s => s.length > 1)
 
 
-				
 
 
 				if(p.length < 7) continue
@@ -69,12 +74,16 @@ let {getPageWithSesh, getQueriedPage,  getValidatedSesh} = require("./gisx");
 					u_link:links[0],
 				}
 
+
+
 				users += JSON.stringify(user) + "\n"
 				
+				console.log(user)
 
-				console.log(query + " Done!")
 			}	
 			
+			console.log(query + " Done!")
+		
 			writeFileSync(path.join(__dirname, "gisxdb.txt"), 
 				readFileSync(path.join(__dirname, "gisxdb.txt"), "utf8") + users,
 				"utf8"

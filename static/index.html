@@ -5,7 +5,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
 	<script src="https://cdn.tailwindcss.com"></script>
-	
+
+
+
 	<link rel="icon" href="/img/logo_tr.png">
 </head>
 
@@ -13,7 +15,11 @@
 <body class="m-0 bg-black text-white font-bold">
 
 
+
 	<div class="w-full h-full flex flex-col md:grid md:grid-cols-4 text-lg p-2">
+
+		
+
 
 		<div class="left flex flex-col items-center">
 
@@ -42,7 +48,7 @@
 		<div class="right flex flex-col items-center">
 			
 				
-			<input hx-post="/4190f129-6623-4ca0-b42f-13447d111174/search" hx-trigger="keyup" hx-target="#results" hx-swap="innerHTML"  value="" id="query" name="query" type="text" class="bg-gray-700 rounded-full w-[90%] mt-10 p-2 px-4 outline-none" placeholder="Suchen">
+			<input hx-post="./search" hx-trigger="keyup" hx-target="#results" hx-swap="innerHTML"  value="" id="query" name="query" type="text" class="bg-gray-700 rounded-full w-[90%] mt-10 p-2 px-4 outline-none" placeholder="Suchen">
 				
 					
 

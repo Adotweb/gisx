@@ -133,13 +133,15 @@ async function getPageWithSesh(url, session){
 
 async function getQueriedPage(query, sesh){
 
+	
+
 		const formData = new FormData() 
 
 	formData.append("person",query)
 	formData.append("search_person.x", 4)
 	formData.append("search_person.y", 9)
 
-
+	
 
 	const data = new URLSearchParams() 
 
@@ -148,6 +150,23 @@ async function getQueriedPage(query, sesh){
 	}
 
 
+	let p = data.toString();
+
+
+	let encodings = {
+		"%C3%A4":"%E4",
+		"%C3%BC":"%FC",
+		"%C3%B6":"%F6",
+		"%C3%A9":"%E9",
+		"%C3%A8":"%E8",
+		"%C3%A0":"%E0",
+	
+	}
+	
+	Object.keys(encodings).forEach(encoding => {
+		p = p.replaceAll(encoding, encodings[encoding])
+	})
+	
 	let fetch2 = await fetch("https://gisy.ksso.ch/schulinfo2/navigation/dispatcher.php?n=3&m=98&p=147&f=1000000", {
 		method:"POST",
 		headers:{
@@ -156,19 +175,23 @@ async function getQueriedPage(query, sesh){
 			"Accept-Language":"en-GB,en;q=0.8",
 			"Cache-Control":"max-age:0",
 			Connection:"keep-alive",
-			"Content-Type":"application/x-www-form-urlencoded",
+			"Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
 			Cookie:"PHPSESSID=" + sesh,
 			Host:"gisy.ksso.ch",
 			Origin:"https://gisy.ksso.ch",
 			Referer:"https://gisy.ksso.ch/schulinfo2/navigation/dispatcher_mobile.php?n=3&amp;m=98&amp;p=2&amp;f=1000000&rmsg=",
-
 		},
-		body:data
+		body:p
 	})	
 
 
+	let buf = await fetch2.arrayBuffer() 
 
-	return await fetch2.text()
+
+	let n = new TextDecoder("ISO-8859-1").decode(buf)
+	
+
+	return n
 }
 
 

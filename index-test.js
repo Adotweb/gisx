@@ -4,10 +4,16 @@ const bodyParser = require("body-parser")
 const fs = require("fs")
 const path = require("path")
 
+const envjson = require("./env.json")
+const cookieParser = require("cookie-parser")
+
+const {getPageWithSesh, getValidatedSesh} = require("./gisx")
+
 express = app.express;
 
-
 app.rest.use(express.json())
+app.rest.use(cookieParser())
+
 app.rest.use(express.static(path.join(__dirname, "static")))
 
 
@@ -22,7 +28,14 @@ function getSim(data, keyword){
 
 }
 
+app.rest.get("/session", (req, res) => {
 
+	console.log(req.cookies)
+
+	if(!req.cookies.session) return res.redirect("/account/login.html")
+
+	return res.send("logged in!")
+})
 
 
 app.rest.post("/search", async (req, res) => {
@@ -31,7 +44,6 @@ let {query} = req.body
 
 	query = query.toLowerCase().trim().replaceAll(/\s+/g, " ");
 		
-
 	
 
 	let people = fs.readFileSync(path.join(__dirname, "gisxdb.txt"), "utf8")
@@ -60,20 +72,34 @@ let {query} = req.body
 
 	copy = copy.slice(0, 8)
 
-	copy = copy.map(info => `<a href="/uinfo${info[1]}">${info[0]}</a>`).join("</br>")
+	copy = copy.map(info => `<a href="./uinfo${info[1]}">${info[0]}</a>`).join("</br>")
 
 
 	res.send(copy)
 
 
 })
+const uinfoRouter = express.Router() 
 
 
+uinfoRouter.get("/*", async (req, res) => {
+
+	console.log(req.originalUrl)
+	
+
+	let userpage = await getPageWithSesh("https://gisy.ksso.ch" + req.originalUrl.replace("/uinfo", ""), phpsesh)
+
+
+	res.send(userpage)
+
+})
+
+app.rest.use("/uinfo", uinfoRouter)
 
 
 app.listen({
 
-	id:process.env.id,
-	secret:process.env.secret
+	id:envjson.id,
+	secret:envjson.secret
 
 }, "http://localhost:5000")
