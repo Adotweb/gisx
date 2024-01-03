@@ -42,6 +42,7 @@ app.rest.post("/search", async (req, res) => {
 
 let {query} = req.body
 
+
 	query = query.toLowerCase().trim().replaceAll(/\s+/g, " ");
 		
 	
