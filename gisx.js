@@ -191,13 +191,100 @@ async function getQueriedPage(query, sesh){
 	let n = new TextDecoder("ISO-8859-1").decode(buf)
 	
 
+
 	return n
 }
 
+
+
+function unEscape(htmlStr) {
+    htmlStr = htmlStr.replace(/&lt;/g , "<");	 
+    htmlStr = htmlStr.replace(/&gt;/g , ">");     
+    htmlStr = htmlStr.replace(/&quot;/g , "\"");  
+    htmlStr = htmlStr.replace(/&#39;/g , "\'");   
+    htmlStr = htmlStr.replace(/&amp;/g , "&");
+
+	htmlStr = htmlStr.replace(/&nbsp;/g, " ")
+
+	htmlStr = htmlStr.replace(/&uuml;/g, "ü")
+	htmlStr = htmlStr.replace(/&Uml;/g, "Ü")
+	htmlStr = htmlStr.replace(/&ouml;/g, "ö")
+	htmlStr = htmlStr.replace(/&Ouml;/g, "Ö")
+	htmlStr = htmlStr.replace(/&auml;/g, "ä")
+	htmlStr = htmlStr.replace(/&Auml;/g, "Ä")
+
+
+	return htmlStr;
+}
+
+async function postQuery([after, before], sesh){
+
+			const formData = new FormData() 
+
+	formData.append("author","")
+	formData.append("afterdate", after)
+	formData.append("beforedate", before)
+	formData.append("title", "")
+	formData.append("search", "Suchen")
+	
+
+	const data = new URLSearchParams() 
+
+	for(const pair of formData){
+		data.append(pair[0], pair[1])
+	}
+
+
+	let p = data.toString();
+
+
+	let encodings = {
+		"%C3%A4":"%E4",
+		"%C3%BC":"%FC",
+		"%C3%B6":"%F6",
+		"%C3%A9":"%E9",
+		"%C3%A8":"%E8",
+		"%C3%A0":"%E0",
+	
+	}
+	
+	Object.keys(encodings).forEach(encoding => {
+		p = p.replaceAll(encoding, encodings[encoding])
+	})
+	
+	let fetch2 = await fetch("https://gisy.ksso.ch/schulinfo2/navigation/dispatcher.php?n=3&m=185&p=10648&f=1000100", {
+		method:"POST",
+		headers:{
+			Accept:"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+			"Accept-Encoding":"gzip, deflate, br",
+			"Accept-Language":"en-GB,en;q=0.8",
+			"Cache-Control":"max-age:0",
+			Connection:"keep-alive",
+			"Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
+			Cookie:"PHPSESSID=" + sesh,
+			Host:"gisy.ksso.ch",
+			Origin:"https://gisy.ksso.ch",
+			Referer:"https://gisy.ksso.ch/schulinfo2/navigation/dispatcher_mobile.php?n=3&amp;m=98&amp;p=2&amp;f=1000000&rmsg=",
+		},
+		body:p
+	})	
+
+
+	let buf = await fetch2.arrayBuffer() 
+
+
+	let n = new TextDecoder("ISO-8859-1").decode(buf)
+	
+	n = unEscape(n)
+	return n
+
+
+}
 
 module.exports = {
 	getValidatedSesh, 
 	getPageWithSesh,
 	getQueriedPage,
-	validateSession
+	validateSession,
+	postQuery
 }
