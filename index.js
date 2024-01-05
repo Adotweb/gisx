@@ -36,6 +36,10 @@ app.rest.get("/session", (req, res) => {
 	return res.send("logged in!")
 })
 
+let people = fs.readFileSync(path.join(__dirname, "gisxdb.txt"), "utf8")
+	.split("\n")
+	.filter(s => s !== "")
+	.map(person => JSON.parse(person))
 
 app.rest.post("/search", async (req, res) => {
 
@@ -45,37 +49,31 @@ let {query} = req.body
 		
 	
 
-	let people = fs.readFileSync(path.join(__dirname, "gisxdb.txt"), "utf8")
-	
-	let names = ([...people.matchAll(/"name":"[^"]*"/g)].map(s => s[0]))	
+	let hits = people.filter(person => {
 
-	let surnames = ([...people.matchAll(/"vorname":"[^"]*"/g)].map(s => s[0]))	
+		//email is the class for some weird reason is fixed in next version i promise ...
 
-	let ulinks = ([...people.matchAll(/"u_link":"[^"]*"/g)].map(s => s[0]))
-
-	names = names.map(name => name.split(":")[1].replaceAll('"', ""))
-	surnames = surnames.map(name => name.split(":")[1].replaceAll('"', ""))
-	ulinks = ulinks.map(name => name.split(":")[1].replaceAll('"', ""))
+		let {name, vorname, email} = person
 
 
 
 
-	let fullinfo = surnames.map((s, i) => [s + " " +names[i], ulinks[i]])
-	
+		return (name + " " + vorname + " " + email).toLowerCase().includes(query)
 
-	let copy = fullinfo.slice();
-
-	copy.sort((a, b) => {
-		return getSim(b[0], query) - getSim(a[0], query)
-	})
-
-	copy = copy.slice(0, 8)
-
-	copy = copy.map(info => `<a href="./uinfo${info[1]}">${info[0]}</a>`).join("</br>")
+	})	
 
 
-	res.send(copy)
+	hits = hits.splice(0, 5)
 
+
+	console.log(hits)
+
+
+	let formatted = hits.map(person => `
+		<a class="flex justify-between" href="${person.u_link}">${person.vorname} ${person.name} <div>${person.email}</div></a>
+		`).join("")
+
+	res.send(formatted)
 
 })
 const uinfoRouter = express.Router() 

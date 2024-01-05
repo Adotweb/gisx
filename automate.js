@@ -68,7 +68,7 @@ let {getPageWithSesh, getQueriedPage,  getValidatedSesh} = require("./gisx");
 					ort:p[3],
 					tel:p[4],
 					id:p[5],
-					email:p[6],
+					class:p[6],
 		
 					email_link:links[links.length - 1],
 					u_link:links[0],
