@@ -118,6 +118,7 @@ function unEscape(htmlStr) {
 		let text = unEscape(post[2])
 
 		return {
+			id:i,
 			author, 
 			date, 
 			title, 
@@ -129,9 +130,16 @@ function unEscape(htmlStr) {
 	})
 
 	
-	console.log(posts)
 
-	let jsonPosts = posts.map(s => JSON.stringify(s)).join("\n") + "\n"
+	let jsonPosts = posts.map((s, i) => {
+
+		let id = s.id + "-" + i;
+
+		s = {...s, id}
+
+		return JSON.stringify(s)
+
+	}).join("\n") + "\n"
 
 	appendFileSync(path.join(__dirname, "postdb.txt"), jsonPosts, "utf-8")
 
