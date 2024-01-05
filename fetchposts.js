@@ -4,7 +4,7 @@ const {writeFileSync, appendFileSync} = require("fs")
 const path = require("path");
 
 
-let dates1 = [
+let dates = [
 	["01.01.2023","31.01.2023"],
 	["01.02.2023","28.02.2023"],
 	["01.03.2023","31.03.2023"],
@@ -20,6 +20,43 @@ let dates1 = [
 	["01.01.2024","31.01.2024"],
 ];
 
+
+function unEscape(htmlStr) {
+    htmlStr = htmlStr.replace(/&lt;/g , "<");	 
+    htmlStr = htmlStr.replace(/&gt;/g , ">");     
+    htmlStr = htmlStr.replace(/&quot;/g , `"`);  
+    htmlStr = htmlStr.replace(/&#39;/g , "'");
+
+	htmlStr = htmlStr.replace(/&laquo;/g, "«")
+	htmlStr = htmlStr.replace(/&raquo;/g, "»")
+
+	htmlStr = htmlStr.replace(/&ccedil;/g, "ç")
+    
+
+	htmlStr = htmlStr.replace(/&#039;/g , "'");
+    htmlStr = htmlStr.replace(/&amp;/g , "&");
+
+	htmlStr = htmlStr.replace(/&nbsp;/g, " ")
+
+	htmlStr = htmlStr.replace(/&uuml;/g, "ü")
+	htmlStr = htmlStr.replace(/&Uuml;/g, "Ü")
+	htmlStr = htmlStr.replace(/&ouml;/g, "ö")
+	htmlStr = htmlStr.replace(/&Ouml;/g, "Ö")
+	htmlStr = htmlStr.replace(/&auml;/g, "ä")
+	htmlStr = htmlStr.replace(/&Auml;/g, "Ä")
+
+
+	htmlStr = htmlStr.replace(/&eacute;/g, "é")
+	htmlStr = htmlStr.replace(/&egrave;/g, "è")
+	htmlStr = htmlStr.replace(/&aacute;/g, "á")
+	htmlStr = htmlStr.replace(/&agrave;/g, "à")
+		
+	htmlStr = htmlStr.replace(/&iacute;/, "í")
+	htmlStr = htmlStr.replace(/&ntilde;/g, "ñ")
+
+
+	return htmlStr;
+}
 
 (async  () => {
 
@@ -74,11 +111,11 @@ let dates1 = [
 
 		let author = post[post.length - 1];
 
-		let date = post[0]
+		let date = (post[0])
 
-		let title = post[1];
+		let title = unEscape(post[1])
 
-		let text = post[2]
+		let text = unEscape(post[2])
 
 		return {
 			author, 
@@ -92,10 +129,11 @@ let dates1 = [
 	})
 
 	
-			console.log(posts)
+	console.log(posts)
+
 	let jsonPosts = posts.map(s => JSON.stringify(s)).join("\n") + "\n"
 
-	appendFileSync(path.join(__dirname, "postdb.txt"), jsonPosts, "latin1")
+	appendFileSync(path.join(__dirname, "postdb.txt"), jsonPosts, "utf-8")
 
 	}
 })()

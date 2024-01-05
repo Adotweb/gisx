@@ -214,6 +214,14 @@ function unEscape(htmlStr) {
 	htmlStr = htmlStr.replace(/&Auml;/g, "Ä")
 
 
+	htmlStr = htmlStr.replace(/&eacute;/g, "é")
+	htmlStr = htmlStr.replace(/&egrave;/g, "è")
+	htmlStr = htmlStr.replace(/&aacute;/g, "á")
+	htmlStr = htmlStr.replace(/&agrave;/g, "à")
+
+		
+
+
 	return htmlStr;
 }
 
