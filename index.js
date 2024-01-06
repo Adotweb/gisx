@@ -60,12 +60,12 @@ let {query} = req.body
 
 		//email is the class for some weird reason is fixed in next version i promise ...
 
-		let {name, vorname, email} = person
+		let {name, vorname, uid, klasse} = person
 
 
 
 
-		return (vorname + " " + name + " " + email).toLowerCase().includes(query)
+		return (vorname + " " + name + " " + uid + " " + klasse).toLowerCase().includes(query)
 
 	})	
 
@@ -77,11 +77,11 @@ let {query} = req.body
 
 	hits = hits.splice(0, limit)
 
-
+	
 
 
 	let formattedPeople = hits.map(person => `
-		<a class="flex justify-between" href="${person.u_link}">${person.vorname} ${person.name} <div>${person.email}</div></a>
+		<a class="flex justify-between" href="${person.u_link}">${person.vorname} ${person.name} <div>${person.klasse || person.uid}</div></a>
 		`).join("")
 
 	if(query.length == 0){

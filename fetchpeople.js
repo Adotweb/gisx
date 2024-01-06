@@ -49,7 +49,7 @@ let {getPageWithSesh, getQueriedPage,  getValidatedSesh} = require("./gisx");
 				let email = gisy[2]
 			
 				info = undefined	
-				if(klasse.includes("@")){
+				if(klasse && klasse.includes("@")){
 					email = klasse
 
 					klasse = undefined	
@@ -67,12 +67,12 @@ let {getPageWithSesh, getQueriedPage,  getValidatedSesh} = require("./gisx");
 					info
 				}
 
-			}).filter(user => user.name.toLowerCase().includes(query.toLowerCase()))
+			}).filter(user => user.name.toLowerCase().slice(0, 2) == (query.toLowerCase()))
 			
 			let queriedUsers = users.map(user => JSON.stringify(user)).join("\n") 
 			queriedUsers += queriedUsers ? "\n" : ""
 			
-
+			console.log(queriedUsers)
 
 			appendFileSync("./gisxdb.txt", queriedUsers, "utf8")
 		}
