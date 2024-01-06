@@ -44,6 +44,12 @@ let {getPageWithSesh, getQueriedPage,  getValidatedSesh} = require("./gisx");
 				let ort = info[3]
 
 
+				let tel = undefined
+				if(info[4]){
+
+					tel = info[4]
+				}
+
 				let uid = gisy[0];
 				let klasse = gisy[1];
 				let email = gisy[2]
@@ -64,17 +70,17 @@ let {getPageWithSesh, getQueriedPage,  getValidatedSesh} = require("./gisx");
 					uid, 
 					klasse, 
 					email,
-					info
+					tel
 				}
 
 			}).filter(user => user.name.toLowerCase().slice(0, 2) == (query.toLowerCase()))
 			
 			let queriedUsers = users.map(user => JSON.stringify(user)).join("\n") 
 			queriedUsers += queriedUsers ? "\n" : ""
-			
+		
 			console.log(queriedUsers)
 
-			appendFileSync("./gisxdb.txt", queriedUsers, "utf8")
+			appendFileSync(process.argv.slice(2).join(" "), queriedUsers, "utf8")
 		}
 
 
