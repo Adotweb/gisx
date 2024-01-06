@@ -1,6 +1,7 @@
 const path = require("path")
-const {writeFileSync, readFileSync} = require("fs")
+const {writeFileSync, readFileSync, appendFileSync} = require("fs")
 require("dotenv").config()
+const cheerio = require("cheerio")
 
 let letters = "abcdefghijklmnopqrstuvwxyzäöü"
 
@@ -8,7 +9,6 @@ let letters = "abcdefghijklmnopqrstuvwxyzäöü"
 
 let {getPageWithSesh, getQueriedPage,  getValidatedSesh} = require("./gisx");
 
-//dont touch this
 
 (async () =>  {
 
@@ -25,72 +25,59 @@ let {getPageWithSesh, getQueriedPage,  getValidatedSesh} = require("./gisx");
 			let queriedPage = await getQueriedPage(query, phpsesh)
 	
 
-		
-			
+			let $ = cheerio.load(queriedPage)
 
-			let result = queriedPage.split("@ksso.ch</a>").map(s => s + "@ksso.ch</a>").filter(s => s.includes("tr"))	
-
-			
-			
-
-			let users = ""
-	
-
-			for(let i = 0; i < result.length; i++){
-
-				let p = result[i].replace(/(\n)/g, "");
-
-
+			let s = $("tr.nms_usrf_table_row").toArray().map(k => $(k).text().replace(/(\n)+/g, "\n"))
 				
 
-	
-				p = (p.split("tr").reverse().map(s => s + "tr").slice(0, 3).reverse().join(""))
 
-				p = "<tr" +  p.substring(0, p.length - 2)
-
-				
-				let links = [...p.matchAll(/href="([^"])*"/g)].map(res => res[0]).map(res => res.replace("href=", "").replaceAll('"', ""))
-
-				p = p.split(/<([^<])*>/g).filter(s => s.length > 1)
+			s = s.map((p, i) => (i % 2 == 0) ? [p, s[i + 1]]: undefined).filter(s => s !== undefined)
 
 
+			let users = s.map(userarr => {
+
+				let [info, gisy] = userarr.map(s => s.split("\n").filter(s => s !== "")); 
+
+				let name = info[0]
+				let vorname = info[1] 
+				let strasse = info[2]; 
+				let ort = info[3]
 
 
-				if(p.length < 7) continue
+				let uid = gisy[0];
+				let klasse = gisy[1];
+				let email = gisy[2]
+			
+				info = undefined	
+				if(klasse.includes("@")){
+					email = klasse
 
-
-				if(p[0].substring(0, query.length).toLowerCase() !== query) continue
-
-				let user = {
-					name:p[0],
-					vorname:p[1],
-					stundenplan:p[2],
-					ort:p[3],
-					tel:p[4],
-					id:p[5],
-					class:p[6],
-		
-					email_link:links[links.length - 1],
-					u_link:links[0],
+					klasse = undefined	
+					info = gisy[2]
 				}
 
+				return {
+					name,
+					vorname,
+					strasse, 
+					ort,
+					uid, 
+					klasse, 
+					email,
+					info
+				}
 
-
-				users += JSON.stringify(user) + "\n"
-				
-				console.log(user)
-
-			}	
+			}).filter(user => user.name.toLowerCase().includes(query.toLowerCase()))
 			
-			console.log(query + " Done!")
-		
-			writeFileSync(path.join(__dirname, "gisxdb.txt"), 
-				readFileSync(path.join(__dirname, "gisxdb.txt"), "utf8") + users,
-				"utf8"
-			)
-				
+			let queriedUsers = users.map(user => JSON.stringify(user)).join("\n") 
+			queriedUsers += queriedUsers ? "\n" : ""
+			
 
+
+			appendFileSync("./gisxdb.txt", queriedUsers, "utf8")
 		}
+
+
 
 	}
 
