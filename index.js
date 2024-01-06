@@ -13,7 +13,7 @@ express = app.express;
 
 app.rest.use(express.json())
 app.rest.use(cookieParser())
-
+app.rest.use(bodyParser())
 app.rest.use(express.static(path.join(__dirname, "static")))
 
 
@@ -41,6 +41,13 @@ let people = fs.readFileSync(path.join(__dirname, "gisxdb.txt"), "utf8")
 	.filter(s => s !== "")
 	.map(person => JSON.parse(person))
 
+
+let posts = fs.readFileSync(path.join(__dirname, "postdb.txt"), "utf8")
+	.split("\n")
+	.filter(s => s !== "")
+	.map(post => JSON.parse(post))
+	.reverse()
+
 app.rest.post("/search", async (req, res) => {
 
 let {query} = req.body
@@ -58,24 +65,68 @@ let {query} = req.body
 
 
 
-		return (name + " " + vorname + " " + email).toLowerCase().includes(query)
+		return (vorname + " " + name + " " + email).toLowerCase().includes(query)
 
 	})	
 
+	let limit = 5 
 
-	hits = hits.splice(0, 5)
+	if(hits.length < 30){
+		limit = hits.length
+	}
+
+	hits = hits.splice(0, limit)
 
 
-	console.log(hits)
 
 
-	let formatted = hits.map(person => `
+	let formattedPeople = hits.map(person => `
 		<a class="flex justify-between" href="${person.u_link}">${person.vorname} ${person.name} <div>${person.email}</div></a>
 		`).join("")
 
-	res.send(formatted)
+	if(query.length == 0){
+		formattedPeople = ""
+	}
+
+
+	let posthits = posts.filter(post => {
+
+		let {text, title, date, author} = post;
+
+		return (author + " " + date + " " + title + " " + text).toLowerCase().includes(query)
+
+	}).slice(0, 5)
+
+	let formattedPosts = posthits.map(post => `
+
+		<hr>
+		<a ${post.mehr ? 'href="' + post.mehr + '"' : ""} class="flex flex-col pt-2">
+			
+			<div class="w-full flex justify-between"><div>${post.title}</div> ${post.date}</div>
+
+			<div class="pt-2">${post.text}</div>
+
+			<div>${post.author}</div>
+		</a>
+
+		`).join("")
+
+
+
+
+	res.send(formattedPeople + formattedPosts)
 
 })
+
+
+app.rest.get("/loadmore", (req, res) => {
+	
+
+	console.log(req.params)
+
+	res.send("hello")
+})
+
 const uinfoRouter = express.Router() 
 
 
