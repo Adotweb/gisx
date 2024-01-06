@@ -81,7 +81,7 @@ let {query} = req.body
 
 
 	let formattedPeople = hits.map(person => `
-		<a class="flex justify-between" href="${person.u_link}">${person.vorname} ${person.name} <div>${person.klasse || person.uid}</div></a>
+		<a class="flex justify-between" href="/id/user/${person.uid}">${person.vorname} ${person.name} <div>${person.klasse || person.uid}</div></a>
 		`).join("")
 
 	if(query.length == 0){
@@ -122,26 +122,34 @@ let {query} = req.body
 app.rest.get("/loadmore", (req, res) => {
 	
 
-	console.log(req.params)
-
 	res.send("hello")
 })
 
-const uinfoRouter = express.Router() 
+
+app.rest.get("/user/:user", async (req, res) => {
+
+	let user = req.params.user
+
+	user = people.filter(s => s.uid === user)[0]
 
 
-uinfoRouter.get("/*", async (req, res) => {
+	let page = `
 
-	
+		<div class="flex flex-col w-[200px]">
+			<div>${user.name} ${user.vorname}</div>
+			<div>${user.uid}</div>
+			<div>${user.email}</div>
+			<div>${user.klasse}</div>
+			<div>${user.strasse} ${user.ort}</div>
+			<div>${user.klasse}</div>
+		</div>
 
-	let userpage = await getPageWithSesh("https://gisy.ksso.ch" + req.originalUrl.replace("/uinfo", ""), phpsesh)
+	`;
 
-
-	res.send(userpage)
+	res.send(page)
 
 })
 
-app.rest.use("/uinfo", uinfoRouter)
 
 
 app.listen({
