@@ -5,6 +5,8 @@ const fs = require("fs")
 const path = require("path")
 
 const envjson = require("./env.json")
+const prodjson = require("./prod.json")
+
 const cookieParser = require("cookie-parser")
 
 const {getPageWithSesh, getValidatedSesh} = require("./gisx")
@@ -139,9 +141,20 @@ app.rest.get("/user/:user", async (req, res) => {
 			<div>${user.name} ${user.vorname}</div>
 			<div>${user.uid}</div>
 			<div>${user.email}</div>
-			<div>${user.klasse}</div>
-			<div>${user.strasse} ${user.ort}</div>
-			<div>${user.klasse}</div>
+			<div>${user.klasse ? user.klasse :""}</div>
+			
+			${user.strasse != "***" ? 
+
+				`<div>${user.strasse} ${user.ort}</div>` :
+				``
+			}
+			
+			${user.tel != "***" ? 
+
+				`<div>${user.tel}</div>` :
+				``
+			}
+
 		</div>
 
 	`;
@@ -152,9 +165,9 @@ app.rest.get("/user/:user", async (req, res) => {
 
 
 
-app.listen({
+app.listen(process.argv[2] == "prod" ? prodjson : {
 
 	id:envjson.id,
 	secret:envjson.secret
 
-}, "http://localhost:5000")
+}, process.argv[2] =="prod" ? undefined : "http://localhost:5000")
