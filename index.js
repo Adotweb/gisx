@@ -90,9 +90,24 @@ let {query} = req.body
 	}
 
 
-	let posthits = posts.filter(post => {
+	let posthits = posts.sort((cur, next) => {
+		
+		[cd, cm, cy] = cur.date.split(".");
+		[nd, nm, ny] = next.date.split(".");
+
+		console.log(cd, cm, cy)	
+
+		let d1 = new Date(cy.split(" ")[0], cm, cd)
+
+		let d2 = new Date(ny.split(" ")[0], nm, nd)
+
+		return d2 - d1
+
+	}).filter(post => {
+
 
 		let {text, title, date, author} = post;
+
 
 		return (author + " " + date + " " + title + " " + text).toLowerCase().includes(query)
 
@@ -165,5 +180,5 @@ app.rest.get("/user/:user", async (req, res) => {
 
 const env = require("./env.json")
 
-//app.listen(env, "ws://localhost:5000")
-app.listen(env)
+app.listen(env, "ws://localhost:5000")
+//app.listen(env)
