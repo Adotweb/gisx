@@ -64,7 +64,7 @@ function unEscape(htmlStr) {
 
 	for(let i = 0; i < dates.length; i++){
 
-
+	
 
 	let text =await postQuery(dates[i], phpsesh)
 
@@ -143,5 +143,6 @@ function unEscape(htmlStr) {
 
 	appendFileSync(path.join(__dirname, "postdb.txt"), jsonPosts, "utf-8")
 
+			console.log(dates[i])
 	}
 })()
