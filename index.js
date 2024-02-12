@@ -162,7 +162,6 @@ app.rest.get("/loadmore", async (req, res) => {
 
 	let page = await getPageWithSesh(query, sesh)
 
-	console.log(page)
 
 	res.send(page)
 })
