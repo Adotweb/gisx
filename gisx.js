@@ -112,6 +112,7 @@ async function getValidatedSesh(username, password){
 }
 
 async function getPageWithSesh(url, session){
+	
 
 	let fetch2 = await fetch(url, {
 		headers:{
@@ -127,7 +128,14 @@ async function getPageWithSesh(url, session){
 
 	})	
 	
-	return await fetch2.text()
+	let buf = await fetch2.arrayBuffer() 
+
+
+	let n = new TextDecoder("ISO-8859-1").decode(buf)
+	
+
+
+	return n
 }
 
 
