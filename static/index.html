@@ -12,7 +12,6 @@
 	<link rel="icon" href="/id/img/logo_tr.png">
 </head>
 
-
 <style>
 
 	/* html:not(img, h1){
@@ -40,10 +39,10 @@
 			GISX
 		</h1>
 
-		<form class="relative " hx-swap="innerHTML" hx-target=".results" hx-trigger="load, keyup" hx-post="/id/search" >
+		<form class="relative " hx-swap="innerHTML" hx-target=".results" hx-trigger="load, keyup" hx-post="/id/search" onkeydown="return event.key != 'Enter'" >
 
 		<i class="fa fa-search icon absolute top-[50%] left-[2em]"></i>
-		<input type="text" name="query" class="max-w-[300px] md:max-w-[400px] bg-gray-200 p-4 pl-14 outline-none text-2xl font-bold rounded-full mt-4">		
+		<input type="text" name="query" id="query" class="max-w-[300px] md:max-w-[400px] bg-gray-200 p-4 pl-14 outline-none text-2xl font-bold rounded-full mt-4">		
 
 
 
@@ -62,7 +61,8 @@
 
 		</div>
 
-	</div>		
+	</div>	
+
 
 </body>
 

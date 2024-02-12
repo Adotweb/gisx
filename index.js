@@ -10,6 +10,17 @@ const cookieParser = require("cookie-parser")
 
 const {getPageWithSesh, getValidatedSesh} = require("./gisx")
 
+
+let sesh = undefined;
+
+function getSesh(){
+
+	return sesh
+
+}
+
+
+
 express = app.express;
 
 app.rest.use(express.json())
@@ -51,7 +62,12 @@ let posts = fs.readFileSync(path.join(__dirname, "postdb.txt"), "utf8")
 
 app.rest.post("/search", async (req, res) => {
 
-let {query} = req.body
+
+	let {query, loaded} = req.body
+
+
+	loaded = loaded ? Number(loaded) + 5 : 0
+	
 
 	query = query.toLowerCase().trim().replaceAll(/\s+/g, " ");
 		
@@ -95,7 +111,6 @@ let {query} = req.body
 		[cd, cm, cy] = cur.date.split(".");
 		[nd, nm, ny] = next.date.split(".");
 
-		console.log(cd, cm, cy)	
 
 		let d1 = new Date(cy.split(" ")[0], cm, cd)
 
@@ -111,12 +126,14 @@ let {query} = req.body
 
 		return (author + " " + date + " " + title + " " + text).toLowerCase().includes(query)
 
-	}).slice(0, 5)
+	}).slice(0, 5 + loaded)
+	
+
 
 	let formattedPosts = posthits.map(post => `
 
 		<hr>
-		<a ${post.mehr ? 'href="' + post.mehr + '"' : ""} class="flex flex-col pt-2">
+		<a  ${post.mehr ? 'href="/id/loadmore?' +post.mehr.split("?")[1] + '"' : ""} class="flex flex-col pt-2">
 			
 			<div class="w-full flex justify-between"><div>${post.title}</div> ${post.date}</div>
 
@@ -127,18 +144,27 @@ let {query} = req.body
 
 		`).join("")
 
+	let loadmore = `
+	<hr>
 
-
-
-	res.send(formattedPeople + formattedPosts)
+	<div class="flex pt-2 justify-center">
+		<input class="hidden" type="text" value="${loaded}" id="loaded" name="loaded">	
+		<button hx-post="/id/search" hx-include="#query, #loaded" hx-target=".results">load more</button>		
+	</div>
+	`
+	res.send(formattedPeople + formattedPosts + (formattedPosts.length > 0  ? loadmore : ""))
 
 })
 
-
-app.rest.get("/loadmore", (req, res) => {
+app.rest.get("/loadmore", async (req, res) => {
 	
+	let query = "https://gisy.ksso.ch/schulinfo2/navigation/dispatcher.php?" + req.url.split("?")[1]
 
-	res.send("hello")
+	let page = await getPageWithSesh(query, sesh)
+
+	console.log(page)
+
+	res.send(page)
 })
 
 
@@ -179,6 +205,11 @@ app.rest.get("/user/:user", async (req, res) => {
 
 
 const env = require("./env.json")
+getValidatedSesh(process.env.u, process.env.p).then(session => {
+	
+	
+	sesh = session
 
-app.listen(env, "ws://localhost:5000")
-//app.listen(env)
+
+	app.listen(env, process.argv[2] == "dev" ? "ws://localhost:5000" : undefined)
+})
