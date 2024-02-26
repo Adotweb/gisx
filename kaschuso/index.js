@@ -54,7 +54,7 @@ function convert(puppeteerCookies) {
 
 (async () => {
 
-	const Cookie = await getValidatedSession({username:"alim.weber", password:"Venawa34puwa&"}).then(res => {
+	const Cookie = await getValidatedSession({username:"username", password:"password"}).then(res => {
 
 		if(res.err){
 			throw new Error(res.err)
