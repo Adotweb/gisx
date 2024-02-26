@@ -85,7 +85,7 @@ async function getGrades(session){
 
 (async () => {
 
-	const Cookie = await getValidatedSession({username:"alim.weber", password:"Venawa34puwa&"}).catch(console.log)
+	const Cookie = await getValidatedSession({username:"", password:""}).catch(console.log)
 
 	console.log(Cookie)
 
