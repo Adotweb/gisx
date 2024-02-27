@@ -18,23 +18,28 @@ async function getValidatedSession({username, password}){
 	await page.click("button.btn.btn-primary")
 
 	
-	try{
-		await page.waitForSelector(".mdl-layout__container", {
+		await page.waitForSelector("#menu21311", {
 			timeout:4000
 		})
-		
 	
 
-		let Cookie = (convert(await page.cookies()))
 		
+	
+		await page.click("#menu21311")
+		//let Cookie = (convert(await page.cookies()))
+	
+		await page.waitForSelector("#uebersicht_bloecke")	
+
+
+		console.log(convert(await page.cookies()))
+
+
+		let content = await page.content()
+		
+
 		await browser.close()
 		
-		return Cookie
-	}catch(e){
-
-		throw new Error("Username or password are wrong!")	
-
-	}
+	return content
 
 
 
@@ -76,7 +81,6 @@ async function getGrades(session){
 
 	let gradePage = await fetch(gradeurl, {
 		Cookie:session,
-		Referer:"https://kaschuso.so.ch/ksso/loginto.php?pageid=21311&mode=4&lang="
 	}).then(res => res.text())
 	
 	fs.writeFileSync(__dirname + "/file.html", gradePage)
@@ -85,11 +89,9 @@ async function getGrades(session){
 
 (async () => {
 
-	const Cookie = await getValidatedSession({username:"", password:""}).catch(console.log)
+	const gradePage =  await getValidatedSession({username:"alim.weber", password:"Venawa34puwa&"}).catch(console.log)
 
-	console.log(Cookie)
-
-	await getGrades(Cookie)	
+	fs.writeFileSync(__dirname + "/file.html", gradePage)
 
 	//getGrades(Cookie)
 })()
