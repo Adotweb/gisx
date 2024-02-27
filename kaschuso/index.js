@@ -5,6 +5,13 @@ const fs = require("fs")
 async function getValidatedSession({username, password}){
 
 
+	let pages = {
+		grades:"",
+		timetable:""
+	}
+
+	console.time()
+
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
 
@@ -19,7 +26,7 @@ async function getValidatedSession({username, password}){
 
 	
 		await page.waitForSelector("#menu21311", {
-			timeout:4000
+			timeout:1000
 		})
 	
 
@@ -31,14 +38,22 @@ async function getValidatedSession({username, password}){
 		await page.waitForSelector("#uebersicht_bloecke")	
 
 
-		console.log(convert(await page.cookies()))
+		let Cookie = (convert(await page.cookies()))
 
 
 		let content = await page.content()
-		
+	
+
+
 
 		await browser.close()
-		
+	
+
+	
+
+	console.timeEnd()
+
+
 	return content
 
 
