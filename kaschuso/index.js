@@ -104,7 +104,7 @@ async function getGrades(session){
 
 (async () => {
 
-	const gradePage =  await getValidatedSession({username:"alim.weber", password:"Venawa34puwa&"}).catch(console.log)
+	const gradePage =  await getValidatedSession({username:"", password:""}).catch(console.log)
 
 	fs.writeFileSync(__dirname + "/file.html", gradePage)
 
