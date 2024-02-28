@@ -26,7 +26,7 @@ async function getValidatedSession({username, password}){
 
 	
 		await page.waitForSelector("#menu21311", {
-			timeout:1000
+			timeout:4000
 		})
 	
 
@@ -70,37 +70,6 @@ function convert(puppeteerCookies) {
 }
 
 
-async function getGrades(session){
-	
-	let prefetch = await fetch("https://kaschuso.so.ch/ksso/index.php?pageid=21311&id=18d943c9e1ef5486&transid=896b31", {
-		headers:{
-			Cookie:session
-		}
-	})
-
-	let newSesh = prefetch.headers.get("set-cookie").split(";")[0]
-
-
-
-	session = session.replace(/PHPSESSID=.*;/g, newSesh + ";")
-
-
-	prefetch = await prefetch.text()
-	
-
-
-
-	let gradeurl = "https://kaschuso.so.ch/ksso/" + [...prefetch.match(/"[^"]*pageid=21311[^"]*"/g)][0].replaceAll(`"`, "").replaceAll("&amp;", "&")
-
-	console.log(gradeurl)
-
-	let gradePage = await fetch(gradeurl, {
-		Cookie:session,
-	}).then(res => res.text())
-	
-	fs.writeFileSync(__dirname + "/file.html", gradePage)
-
-}
 
 (async () => {
 
