@@ -1,6 +1,8 @@
 const fs = require("fs")
 const {generateBid} = require("./bid");
 
+const {default:axios} = require("axios")
+
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 
@@ -18,14 +20,14 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 	
 
 	let Cookie = prefetch.headers.get("set-cookie")
+	let scdid = Cookie.split(" ").filter(c => c.includes("SCDID_S"))
 
-	console.log(Cookie)
 
 	const script1 = await fetch("https://kaschuso.so.ch/sil-bid-check/ses.js", {
 		headers:{
 			Cookie
 		}
-	}).then(res => {console.log(res.headers);return res}).then(res => res.text())
+	}).then(res => {return res}).then(res => res.text())
 
 	
 	let seed1 = [...script1.match(/"?[^"]+="/g)][0].replaceAll(`"`, "").replaceAll("?", "").replaceAll("=", "")
@@ -34,6 +36,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 	let url = "https://kaschuso.so.ch/login/sls/auth?" + seed1 + "=" + generateBid(seed1)
 
+	await sleep(5000);
 
 	let form = new URLSearchParams()
 
@@ -41,8 +44,8 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 	form.append("password", "Venawa34puwa&");
 	form.append("currentRequestedPage", currentRequestedPage)
 
-	
+	let page = await fetch(url)	
 
-	console.table({seed1, transformed1: generateBid(seed1), currentRequestedPage})
-		console.log(url)
+	console.table({seed1, transformed1: generateBid(seed1), currentRequestedPage, scdid})
+		//console.log(url)
 })()
