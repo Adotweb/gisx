@@ -28,7 +28,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 			Cookie
 		}
 	}).then(res => {return res}).then(res => res.text())
-
+	
 	
 	let seed1 = [...script1.match(/"?[^"]+="/g)][0].replaceAll(`"`, "").replaceAll("?", "").replaceAll("=", "")
 
@@ -36,7 +36,6 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 	let url = "https://kaschuso.so.ch/login/sls/auth?" + seed1 + "=" + generateBid(seed1)
 
-	await sleep(5000);
 
 	let form = new URLSearchParams()
 
@@ -46,6 +45,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 	let page = await fetch(url)	
 
-	console.table({seed1, transformed1: generateBid(seed1), currentRequestedPage, scdid})
+	console.table({seed1, transformed1: generateBid(seed1), currentRequestedPage})
+	console.log({seed:seed1, bid:generateBid(seed1), currentRequestedPage, Cookie, url})
 		//console.log(url)
 })()
