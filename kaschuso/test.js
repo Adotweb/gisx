@@ -1,6 +1,7 @@
 const fs = require("fs")
 const {generateBid} = require("./bid");
 
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 
 
@@ -40,29 +41,8 @@ const {generateBid} = require("./bid");
 	form.append("password", "Venawa34puwa&");
 	form.append("currentRequestedPage", currentRequestedPage)
 
-	let page = await fetch(url, {
-		headers:{
-
-			"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-			"Accept-Encoding":"gzip, deflate, br",
-			"Accept-Language":"en-GB,en;q=0.9",
-			"Cache-Control":"max-age=0",
-			"Content-Type":"application/x-www-form-urlencoded",
-			Cookie,
-			"Origin":"https://kaschuso.so.ch",
-			"Referer":"https://kaschuso.so.ch/login/sls/auth?RequestedPage=%2fksso"
-		},
-		method:"POST",
-		body:form,
-		redirect:"follow"
-	})
-
-
-	page = await page.text()
-
-	fs.writeFileSync(__dirname + "/file.html", page)
-
-		
+	
 
 	console.table({seed1, transformed1: generateBid(seed1), currentRequestedPage})
+		console.log(url)
 })()
