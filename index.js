@@ -30,23 +30,7 @@ app.rest.use(express.static(path.join(__dirname, "static")))
 
 
 
-function getSim(data, keyword){
 
-	data = data.toLowerCase();
-
-	keyword = keyword.toLowerCase(); 
-
-	return data.length - data.replace(new RegExp(keyword, "g"), "").length
-
-}
-
-app.rest.get("/session", (req, res) => {
-
-
-	if(!req.cookies.session) return res.redirect("/account/login.html")
-
-	return res.send("logged in!")
-})
 
 let people = fs.readFileSync(path.join(__dirname, "gisxdb.txt"), "utf8")
 	.split("\n")
@@ -59,6 +43,39 @@ let posts = fs.readFileSync(path.join(__dirname, "postdb.txt"), "utf8")
 	.filter(s => s !== "")
 	.map(post => JSON.parse(post))
 	.reverse()
+
+
+app.rest.post("/session", async (req, res) => {
+	
+
+	res.send(`
+
+
+		<form action="/id/login" method="POST">
+
+			<input type="text" name="username">
+
+			<input type="text" name="password">
+
+			<button type="submit">Submit</button>
+		</form>
+
+		`)
+
+})
+
+app.rest.post("/login", async (req, res) => {
+
+	let {username, password} = req.body
+
+	let token = await getToken(username, password)
+
+	console.log(token)
+
+	res.cookie("token", token)
+
+	res.send("succesfull!")
+})
 
 app.rest.post("/search", async (req, res) => {
 
@@ -204,6 +221,7 @@ app.rest.get("/user/:user", async (req, res) => {
 
 
 const env = require("./env.json")
+const { getToken } = require("./kaschuso/api")
 getValidatedSesh(process.env.u, process.env.p).then(session => {
 	
 	
