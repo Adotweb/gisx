@@ -64,6 +64,8 @@ app.rest.post("/session", async (req, res) => {
 
 })
 
+
+
 app.rest.post("/login", async (req, res) => {
 
 	let {username, password} = req.body
@@ -73,8 +75,8 @@ app.rest.post("/login", async (req, res) => {
 	console.log(token)
 
 	res.cookie("token", token)
-
-	res.send("succesfull!")
+	
+	res.redirect("/")
 })
 
 app.rest.post("/search", async (req, res) => {
