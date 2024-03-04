@@ -47,24 +47,7 @@ let posts = fs.readFileSync(path.join(__dirname, "postdb.txt"), "utf8")
 	.reverse()
 
 
-app.rest.post("/session", async (req, res) => {
-	
 
-	res.send(`
-
-
-		<form action="/id/login" method="POST">
-
-			<input type="text" name="username">
-
-			<input type="text" name="password">
-
-			<button type="submit">Submit</button>
-		</form>
-
-		`)
-
-})
 
 
 
