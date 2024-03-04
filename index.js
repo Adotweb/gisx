@@ -9,7 +9,7 @@ const envjson = require("./env.json")
 const cookieParser = require("cookie-parser")
 
 const {getPageWithSesh, getValidatedSesh} = require("./gisx")
-
+const {kaschusorouter} = require("./kaschuso/router")
 
 let sesh = undefined;
 
@@ -28,6 +28,8 @@ app.rest.use(cookieParser())
 app.rest.use(bodyParser())
 app.rest.use(express.static(path.join(__dirname, "static")))
 
+
+app.rest.use("/kaschuso", kaschusorouter)
 
 
 
