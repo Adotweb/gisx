@@ -8,19 +8,45 @@ let $ = cheerio.load(page)
 
 let table = $(".dhx_cal_data")
 
-let columns = table.find(".dhx_scale_holder").toArray()
 
-columns = columns.map(column => {
+let events = table.find(".dhx_cal_event").toArray().map(s => cheerio.load(s))
+	.map(event => {
 
+		let eventbody = event(".stpt_event_body")
 
-	let p = $.html(column)
-	return p
-}).map(column => {
-
-	let p = cheerio.load(column)(".dhx_cal_event.stpt_event").toArray()
+		let info = eventbody.attr().title.trim().replaceAll(/\s+/g, " ");
 	
-	console.log(p)
-	
-	return p
-})
+			
 
+		let [time, rest] = info.split("/").map(s => s.trim())
+
+		
+
+		let room = rest.split(" ")[0]
+		rest = rest.replace(room, "").trim()
+
+
+		let course = rest.split(" ")[0]
+		rest = rest.replace(course, "").trim()
+
+
+		let [coursename, classes, teacher] = course.split("-")
+		
+		try{
+			classes = classes.split(",")
+		}catch(e){}
+
+
+		let LessonObject = {
+			time,
+			room,
+			coursename,
+			classes,
+			teacher
+		}	
+
+		return LessonObject
+	})
+
+
+console.log(events)

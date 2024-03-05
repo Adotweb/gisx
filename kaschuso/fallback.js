@@ -35,7 +35,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 	
 	url.searchParams.set("pageid", 22207)
-	url.searchParams.set("listindex_s", 7)
+	url.searchParams.set("listindex_s", 6)
 
 	await page.goto(url.toString())
 
