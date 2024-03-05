@@ -31,7 +31,7 @@ let events = table.find(".dhx_cal_event").toArray().map(s => cheerio.load(s))
 
 
 		let [coursename, classes, teacher] = course.split("-")
-		
+
 		try{
 			classes = classes.split(",")
 		}catch(e){}
