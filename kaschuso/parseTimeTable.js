@@ -2,7 +2,11 @@ let cheerio = require("cheerio");
 
 let fs = require("fs")
 
-let page = fs.readFileSync(__dirname + "/file.html")
+
+
+
+function parseTimeTable(page){
+
 
 let $ = cheerio.load(page)
 
@@ -80,5 +84,13 @@ let weekdays = [0, 1, 2, 3, 4].map(s => table.find(`div[data-column-index="${s}"
 	})
 
 
+	return {
+		timetable:weekdays, 
+		KLP, 
+		classname
+	}
+}
 
-fs.writeFileSync(__dirname  + `/${classname}_${KLP}.json`, JSON.stringify(weekdays, null, 4))
+module.exports = {
+	parseTimeTable
+}

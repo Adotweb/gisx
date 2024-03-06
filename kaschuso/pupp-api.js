@@ -5,11 +5,120 @@ const cheerio = require("cheerio")
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 
+async function getClassesList(username, password){
+	
+	const browser = await puppeteer.launch({headless:true})
+
+
+	let page = await browser.newPage()
+	await page.goto("https://kaschuso.so.ch/ksso")
+	
+	await page.waitForSelector(`input[name="userid"]`)
+
+	await page.type(`input[name="userid"]`, username)
+
+	await page.type(`input[name="password"]`, password)
+
+	await page.click(`button[type="submit"]`)
+
+	await page.waitForSelector(`div#startMenu`)
+
+	await page.click(`i.fa-graduation-cap.fas.fa-lg`)
+
+	await sleep(1000)
+
+	let url = new URL(await page.url())
+	let gradePage = await page.content()
+
+
+		
+
+	
+	url.searchParams.set("pageid", 22207)
+	url.searchParams.set("listindex_s", classname)
+
+	await page.goto(url.toString())
+
+	await page.waitForSelector(`.dhx_cal_event.stpt_event`)
+
+
+	
+	
+	let text = await page.content()
+
+	let $ = cheerio.load(text)
+
+
+		let classlist = []
+		$("#listindex_s").children().toArray().map(n => {
+			classlist.push([n.attribs.label, n.attribs.value])
+		})
+
+
+
+	
+
+	await browser.close()
+
+	return classlist
+}
+
+async function getTimeTables(username, password, classlist){
+
+	const browser = await puppeteer.launch({headless:true})
+
+
+	let page = await browser.newPage()
+	await page.goto("https://kaschuso.so.ch/ksso")
+	
+	await page.waitForSelector(`input[name="userid"]`)
+
+	await page.type(`input[name="userid"]`, username)
+
+	await page.type(`input[name="password"]`, password)
+
+	await page.click(`button[type="submit"]`)
+
+	await page.waitForSelector(`div#startMenu`)
+
+	await page.click(`i.fa-graduation-cap.fas.fa-lg`)
+
+	await sleep(1000)
+
+	let url = new URL(await page.url())
+	let gradePage = await page.content()
+
+
+		
+
+	
+	url.searchParams.set("pageid", 22207)
+	url.searchParams.set("listindex_s", classname)
+
+	await page.goto(url.toString())
+
+	await page.waitForSelector(`.dhx_cal_event.stpt_event`)
+
+
+	
+	
+	let text = await page.content()
+
+	let $ = cheerio.load(text)
+
+	
+
+
+	await browser.close()
+
+
+	return text
+
+}
 
 async function getTimeTable(username, password, classname=0) {
 	let returns = []
 
-	console.time()
 
 	const browser = await puppeteer.launch({headless:true})
 
@@ -66,13 +175,13 @@ async function getTimeTable(username, password, classname=0) {
 
 	await browser.close()
 
-	console.timeEnd()
 
 	return text
 }
 
 
 module.exports = {
-
+	getClassesList, 
+	getTimeTables,
 	getTimeTable
 }
