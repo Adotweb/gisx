@@ -2,6 +2,10 @@ const puppeteer = require("puppeteer");
 const fs = require("fs")
 const cheerio = require("cheerio")
 
+
+const {parseTimeTable} = require("./parseTimeTable")
+
+
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 
@@ -89,30 +93,38 @@ async function getTimeTables(username, password, classlist){
 	let gradePage = await page.content()
 
 
-		
+
+	for(let i = 0; i < classlist.length; i++){
+		try{
+
+
+		url.searchParams.set("pageid", 22207)
+		url.searchParams.set("listindex_s", classlist[i][1])
 
 	
-	url.searchParams.set("pageid", 22207)
-	url.searchParams.set("listindex_s", classname)
+		await page.goto(url.toString())
 
-	await page.goto(url.toString())
-
-	await page.waitForSelector(`.dhx_cal_event.stpt_event`)
+		await page.waitForSelector(`.dhx_cal_event.stpt_event`, {timeout:5000})
 
 
 	
 	
-	let text = await page.content()
+		let text = await page.content()
 
-	let $ = cheerio.load(text)
+		let {timetable, KLP, classname} = parseTimeTable(text)
+
+		console.log(classname)
+
+		fs.writeFileSync(__dirname + `/timetables/${classname}_${KLP}.json`, JSON.stringify(timetable))	
+
+		}catch{
+			continue
+		}		
+
+	}	
 
 	
-
-
 	await browser.close()
-
-
-	return text
 
 }
 
