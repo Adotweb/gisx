@@ -1,9 +1,12 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs")
+const cheerio = require("cheerio")
+
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 
-(async () => {
+
+async function getTimeTable(username, password, classname=0) {
 	let returns = []
 
 	console.time()
@@ -31,25 +34,45 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 	let url = new URL(await page.url())
 	let gradePage = await page.content()
 
-	returns.push(gradePage)
+
+		
 
 	
 	url.searchParams.set("pageid", 22207)
-	url.searchParams.set("listindex_s", 6)
+	url.searchParams.set("listindex_s", classname)
 
 	await page.goto(url.toString())
 
 	await page.waitForSelector(`.dhx_cal_event.stpt_event`)
 
 
-	await page.screenshot({path:__dirname + "/pic.png"})
-
+	
 	
 	let text = await page.content()
 
-	fs.writeFileSync(__dirname + "/file.html", text)
+	let $ = cheerio.load(text)
+
+
+	console.log(fs.readdirSync(__dirname))
+	if(fs.readdirSync(__dirname).includes("classlist.js")){
+		let classlist = []
+		$("#listindex_s").children().toArray().map(n => {
+			classlist.push([n.attribs.label, n.attribs.value])
+		})
+
+		fs.writeFileSync(__dirname + "/classlist.json", JSON.stringify(classlist, null, 4))
+	}
+
 
 	await browser.close()
 
 	console.timeEnd()
-})()
+
+	return text
+}
+
+
+module.exports = {
+
+	getTimeTable
+}
