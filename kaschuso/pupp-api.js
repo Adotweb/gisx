@@ -115,7 +115,7 @@ async function getTimeTables(username, password, classlist){
 
 		console.log(classname)
 
-		fs.writeFileSync(__dirname + `/timetables/${classname}_${KLP}.json`, JSON.stringify(timetable))	
+		fs.writeFileSync(__dirname + `/timetables/${classname}.json`, JSON.stringify({KLP, timetable}))	
 
 		}catch{
 			continue
