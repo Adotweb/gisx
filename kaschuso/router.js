@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { getToken } = require("./api");
+const { getValidatedSession } = require("./pupp-api");
 
 const kaschusorouter = Router();
 
@@ -10,12 +10,13 @@ kaschusorouter.post("/login", async (req, res) => {
 
 	console.log(username, password);
 
-	let token = await getToken(username, password).catch(e => console.log(e))
+	let token = await getValidatedSession(username, password)
+	
 
 	console.log(token)
-
-	res.send("Hello there")
-
+	
+	res.cookie("token", token)
+	res.send("hello there")
 })
 
 kaschusorouter.get("/session", (req, res) => {
@@ -29,11 +30,16 @@ kaschusorouter.get("/session", (req, res) => {
 
 		<div class="w-full h-full flex justify-center items-center">
 
-			<form method="POST" action="login" class="w-[300px] flex flex-col p-4 border-black border-2 rounded-md gap-y-4">
+			<form method="POST" action="/id/kaschuso/login" class="w-[300px] flex flex-col p-4 border-black border-2 rounded-md">
+	
 
-				<input type="text" name="username" class="border-2 border-black">
-				<input type="text" name="password" class="border-2 border-black">
-				<button type="submit">Submit</button>
+				<label for="" class="w-full font-bold text-lg underline pb-4">Kiss</label>
+					
+				<label for="username">Username</label>
+				<input type="text" name="username" class="border-b-2 border-black bg-transparent outline-none">
+				<label for="passowrd" class="pt-4">Password</label>
+				<input type="password" name="password" class="border-b-2 border-black bg-transparent outline-none">
+				<button type="submit" class="w-full mt-2 p-2 rounded-md font-bold bg-black text-white">Submit</button>
 
 			</form>
 
@@ -44,6 +50,8 @@ kaschusorouter.get("/session", (req, res) => {
 	}
 
 })
+
+
 
 module.exports = {
 	kaschusorouter

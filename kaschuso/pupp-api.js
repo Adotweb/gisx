@@ -6,7 +6,45 @@ const cheerio = require("cheerio")
 const {parseTimeTable} = require("./parseTimeTable")
 
 
+
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+
+
+async function getValidatedSession(username, password){
+
+	const browser = await puppeteer.launch({headless:true})
+
+
+	let page = await browser.newPage()
+	await page.goto("https://kaschuso.so.ch/ksso")
+	
+	await page.waitForSelector(`input[name="userid"]`)
+
+	await page.type(`input[name="userid"]`, username)
+
+	await page.type(`input[name="password"]`, password)
+
+	await page.click(`button[type="submit"]`)
+
+	try{
+		await page.waitForSelector(`div#startMenu`, {
+			timeout:5000
+		})
+	
+
+		console.log(await page.cookies())
+		return "asdklfjaslöfjaslökfj"
+
+	}catch{
+		console.log("error")
+		return "error"
+	}
+	
+
+}
+
+
+
 
 
 async function getClassesList(username, password){
@@ -195,5 +233,6 @@ async function getTimeTable(username, password, classname=0) {
 module.exports = {
 	getClassesList, 
 	getTimeTables,
-	getTimeTable
+	getTimeTable,
+	getValidatedSession
 }

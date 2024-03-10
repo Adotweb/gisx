@@ -51,19 +51,6 @@ let posts = fs.readFileSync(path.join(__dirname, "postdb.txt"), "utf8")
 
 
 
-app.rest.post("/login", async (req, res) => {
-
-	let {username, password} = req.body
-
-	let token = await getToken(username, password)
-
-	console.log(token)
-
-	res.cookie("token", token)
-	
-	res.redirect("/")
-})
-
 app.rest.post("/search", async (req, res) => {
 
 
@@ -177,6 +164,7 @@ app.rest.get("/user/:user", async (req, res) => {
 
 	user = people.filter(s => s.uid === user)[0]
 
+	let timetable = fs.readFileSync(path.join(__dirname, "kaschuso", "timetables", user.klasse + ".json"), "utf8")
 
 	let page = `
 
@@ -198,6 +186,8 @@ app.rest.get("/user/:user", async (req, res) => {
 				``
 			}
 
+			<div>${timetable}</div>
+
 		</div>
 
 	`;
@@ -208,12 +198,12 @@ app.rest.get("/user/:user", async (req, res) => {
 
 
 const env = require("./env.json")
-const { getToken } = require("./kaschuso/api")
-getValidatedSesh(process.env.u, process.env.p).then(session => {
+getValidatedSesh(process.env.u, process.env.p).then(async session => {
 	
 	
 	sesh = session
 
+		
 
 	app.listen(env, process.argv[2] == "dev" ? "ws://localhost:5000" : undefined)
 })
