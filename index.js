@@ -11,6 +11,8 @@ const {getPageWithSesh, getValidatedSesh} = require("./gisx")
 
 const {kaschusorouter} = require("./kaschuso/api-fallback")
 
+const {kaschusowrapper, getPage} = require("./kaschuso/kaschusowrapper")
+
 let sesh = undefined;
 
 
@@ -207,5 +209,5 @@ getValidatedSesh(process.env.u, process.env.p).then(async session => {
 	
 		
 
-	app.listen(env, process.argv[2] == "dev" ? "ws://localhost:5000" : undefined)
+	kaschusowrapper(() => app.listen(env, process.argv[2] == "dev" ? "ws://localhost:5000" : undefined))
 })

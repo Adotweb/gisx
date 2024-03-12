@@ -1,5 +1,5 @@
 const {Router, json} = require("express")
-const {getPage} = require("../index")
+const {getPage} = require("./kaschusowrapper")
 const app = Router()
 
 const classlist = require("./classlist.json")
@@ -63,6 +63,7 @@ app.use(async (req, res, next) => {
 
 	let page = getPage();
 
+
 	let cookies = await page.cookies()
 
 	for(let i = 0; i < cookies.length;i++){
@@ -107,7 +108,6 @@ app.use(async (req, res, next) => {
 		took
 	})
 
-		console.log(info)
 
 	
 	next()
@@ -117,7 +117,6 @@ app.use(async (req, res, next) => {
 
 app.post("/timetable", async (req, res) => {
 
-	console.time()
 	let {"class":classname} = req.body
 	let info = getInfo()
 	
@@ -125,8 +124,6 @@ app.post("/timetable", async (req, res) => {
 
 	
 	let classid = classlist.filter(s => s[0] == classname)[0]
-
-	console.log(classid[0], classid[1])
 
 	let url = `https://kaschuso.so.ch/ksso/index.php?pageid=22207&id=${info.id}&transid=${info.transid}&listindex_s=${classid[1]}`	
 
@@ -140,7 +137,6 @@ app.post("/timetable", async (req, res) => {
 	}catch{
 
 		res.send(timetable)	
-		console.timeEnd()
 
 		return
 	}
@@ -164,14 +160,12 @@ app.post("/timetable", async (req, res) => {
 	timetable = sortEventsIntoWeek(events)
 
 	res.send(timetable)
-	console.timeEnd()
 })
 
 
 app.post("/grades", async (req, res) => {
 
 
-	console.time()
 	let page = getPage()
 	let info = getInfo()	
 
@@ -237,7 +231,6 @@ app.post("/grades", async (req, res) => {
 
 
 	res.send(grades)
-	console.timeEnd()
 })
 
 module.exports = {
