@@ -187,96 +187,59 @@ app.post("/grades", async (req, res) => {
 
 	let grades = await page.evaluate(() => {
 
-		let p = [...document.querySelectorAll("tbody > tr")].map(({className, innerText}) => ({className, innerText}));
-		
-		let titles = []
-	
-		let infos = p.filter((s, i) => {
-			if(s.className.split("_")[2] == "detailrow"){
-				titles.push(p[i - 1])
-				return true
+		let p = [...document.querySelectorAll("tbody > tr")];
+
+		p = p.filter((s, i) => (s.className.includes("detailrow") || (p[i + 1] && p[i + 1].className.includes("detailrow"))))
+
+		p = p.map((s, i) => {
+			if(i % 2 === 0){
+				return {
+					title: s.innerText.split("\t")[0].replace("\n", " "),
+					infos: p[i + 1]
+				}
 			}
-			return false
+			return null
+		}).filter(s => s !== null)
+
+
+		p = p.map(({title, infos}) => {
+    			let dates = [...infos.querySelectorAll('td[style="text-align:left; width: 25%;"]')]
+				.map(s => s.innerHTML).filter(s => !s.includes("<i>"))
+
+    			let subjects = [...infos.querySelectorAll('td[style="text-align:left; width: 30%;"]')]
+				.map(s => s.innerHTML).filter(s => !s.includes("<i>"))
+
+    			let gradeweights = [...infos.querySelectorAll('td[style="text-align:left; width: 15%;"]')]
+				.map(s => s.innerHTML).filter(s => !s.includes("<i>")).map(s => s.replace(/\s+/g, " "))
+
+    			let grades = gradeweights.map((s, i) => {
+        			if(i % 2 === 0){
+            				return {
+                				grade: s.trim().split(" ")[0],
+                				weight: gradeweights[i + 1]
+            				}
+    				} 
+        			return null 
+    			}).filter(s => s !== null).map((obj, i)=> {
+
+				return {
+					...obj, 
+					date:dates[i],
+					topics:subjects[i],
+				}				
+
+			})
+    	
+	
+			return {subject:title, grades}
+		})	
+
+		return p	
+
 		})
 
-		infos = infos.map(({innerText}) => innerText).map(info => info.replace(/\s+/g, " ").trim().split(" ").slice(4).join(" ")).map(info => {
 
-			let copy = info.split(" ")
-		
-			copy = copy.slice(0, copy.length - 3).join(" ")
-		
-			copy = copy.split(/(?=[0-9]{2}\.[0-9]{2}\.[0-9]{4})/g)
-			
-			
-			return copy
-		})
-
-		titles = titles.map(({innerText}) => innerText).map(title => title.split(/\t/g).slice(0, 2).map(s => s.replaceAll("\n", " ")))
-
-		return {
-			infos, titles
-		}
-	})
-
-	let gradesinfo = grades.infos
-
-
-
-	gradesinfo = gradesinfo.map(subject => {
-		return subject.map(gradeobject => {
-
-			if(!gradeobject){
-				return ""
-			}
-
-			let datum = gradeobject.split(" ")[0]
-			gradeobject = gradeobject.replace(datum, "").trim().split(" ")
-	
-			let amd = datum.split(".")
-			let date = new Date(`${amd[1]}.${amd[0]}.${amd[2]}`)
-			let now = new Date() 
-
-
-			if(now < date) return ""
-
-			let gewichtung = gradeobject[gradeobject.length - 1]
-			gradeobject = gradeobject.slice(0, gradeobject.length - 1).join(" ").trim()
-
-			let details = undefined
-			if(gradeobject.includes("Details")){
-				details = "Details" + gradeobject.split("Details")[1]
-				gradeobject = gradeobject.replace(details, "").trim()
-
-				details = details.replace("NotePunkte", "Note, Punkte")
-
-			}
-		
-			let grade = undefined
-			let title = undefined
-
-
-			gradeobject = gradeobject.split(" ")
-			grade = gradeobject[gradeobject.length - 1] 
-
-			gradeobject = gradeobject.join(" ").replace(grade, " ")
-			title = gradeobject	
-
-			return {
-				title,
-				grade,
-				datum, 
-				details,
-				gewichtung,
-				gradeobject
-			}
-		}).filter(s => s!== "")
-
-	})
-
-
-	
-
-	res.send(gradesinfo)
+	res.send(grades)
 	console.timeEnd()
 })
 
