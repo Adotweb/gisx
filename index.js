@@ -4,20 +4,18 @@ const bodyParser = require("body-parser")
 const fs = require("fs")
 const path = require("path")
 
-const envjson = require("./env.json")
 
 const cookieParser = require("cookie-parser")
 
 const {getPageWithSesh, getValidatedSesh} = require("./gisx")
-const {kaschusorouter} = require("./kaschuso/router")
+
+const {kaschusorouter} = require("./kaschuso/api-fallback")
 
 let sesh = undefined;
 
-function getSesh(){
 
-	return sesh
 
-}
+
 
 
 
@@ -197,12 +195,16 @@ app.rest.get("/user/:user", async (req, res) => {
 })
 
 
+
 const env = require("./env.json")
+
+
 getValidatedSesh(process.env.u, process.env.p).then(async session => {
 	
-	
-	sesh = session
 
+
+	sesh = session
+	
 		
 
 	app.listen(env, process.argv[2] == "dev" ? "ws://localhost:5000" : undefined)

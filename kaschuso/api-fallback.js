@@ -1,7 +1,6 @@
-const express = require("express");
-const puppeteer = require("puppeteer")
-const app = express();
-const fs = require("fs")
+const {Router, json} = require("express")
+const {getPage} = require("../index")
+const app = Router()
 
 const classlist = require("./classlist.json")
 
@@ -49,12 +48,10 @@ function sortEventsIntoWeek(events) {
 
     return weekArray;
 }
-app.use(express.json())
+app.use(json())
 
-let globalpage = undefined
 let info = undefined
 
-const getPage = () => globalpage
 const getInfo = () => info
 
 
@@ -243,16 +240,6 @@ app.post("/grades", async (req, res) => {
 	console.timeEnd()
 })
 
-;(async ( )=> {
-
-	let browser = await puppeteer.launch()
-
-	globalpage = await browser.newPage();
-
-	
-
-	app.listen(3000)
-
-
-
-})()
+module.exports = {
+	kaschusorouter : app
+}
