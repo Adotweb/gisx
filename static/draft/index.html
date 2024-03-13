@@ -27,13 +27,15 @@
 <body class="bg-orange-50">
 
 
-	<div class= flex justify-center">
-		<form action="" class="flex flex-col items-center">
+	<div class="h-full flex items-center justify-center">
+		<form method="POST" hx-post="/id/kaschuso/login" hx-trigger="submit" class="flex flex-col items-start border-2 border-black rounded-md p-4">
+			<div class="title font-bold text-xl pb-4">KISS login</div>
+			<label for="username"><div class="font-bold">Username</div></label>
+			<input type="text" name="username" class="bg-transparent outline-none border-b-2 border-black">
+			<label for="passowrd" class="pt-4"><div class="font-bold">Password</div></label>
+			<input type="password" name="password" class="bg-transparent outline-none border-b-2 border-black">
 
-			<label for="username">Username</label>
-			<input type="text" class="bg-transparent outline-none border-b-2 border-blac">
-
-
+			<button type="submit" class="mt-4 text-white font-bold bg-black rounded-md p-2 w-full">Submit</button>
 		</form>	
 	</div>
 
