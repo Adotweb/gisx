@@ -196,7 +196,16 @@ app.rest.get("/user/:user", async (req, res) => {
 
 })
 
+app.rest.get("/test", (req, res) => {
 
+	res.cookie("header", "header")
+	res.redirect("/test2")
+})
+
+app.rest.get("/test2", (req, res) => {
+
+	res.send("test2")
+})
 
 const env = require("./env.json")
 
