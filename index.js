@@ -198,7 +198,7 @@ app.rest.get("/user/:user", async (req, res) => {
 
 app.rest.get("/test", (req, res) => {
 
-	res.cookie("header", "header")
+	res.cookie("newheader", "header")
 	res.redirect("/test2")
 })
 
